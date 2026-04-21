@@ -1,5 +1,6 @@
 using MediatR;
 using ServiceMatch.Application.DTOs;
+using ServiceMatch.Domain.Enums;
 using ServiceMatch.Domain.Exceptions;
 using ServiceMatch.Domain.Interfaces;
 

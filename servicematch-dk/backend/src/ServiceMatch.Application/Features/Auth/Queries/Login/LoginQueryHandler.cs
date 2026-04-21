@@ -26,7 +26,7 @@ public sealed class LoginQueryHandler(
         // If no user found, still run verify to prevent timing attacks
         if (client == null && provider == null)
         {
-            BCrypt.Net.BCrypt.Verify(request.Password, BCrypt.Net.BCrypt.HashPassword("dummy"));
+            passwordHasher.Verify(request.Password, "$2a$11$dummy.hash.that.will.never.match.xxxxxxxxxxxxxxxxxxxxxxxxx");
             throw new DomainException("Invalid email or password.");
         }
 
