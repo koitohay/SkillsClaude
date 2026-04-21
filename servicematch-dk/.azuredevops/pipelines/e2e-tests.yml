@@ -1,0 +1,62 @@
+trigger: none
+
+parameters:
+  - name: ENVIRONMENT
+    type: string
+    default: test
+    values:
+      - test
+      - dev
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  nodeVersion: '22.x'
+  baseUrl: ${{ format('https://servicematch-{0}-frontend.northeurope.azurecontainerapps.io', parameters.ENVIRONMENT) }}
+  apiBaseUrl: ${{ format('https://servicematch-{0}-api.northeurope.azurecontainerapps.io/api/v1', parameters.ENVIRONMENT) }}
+
+stages:
+  - stage: E2E
+    displayName: Playwright E2E Tests
+    jobs:
+      - job: PlaywrightTests
+        displayName: Run Playwright tests
+        timeoutInMinutes: 30
+        steps:
+          - task: NodeTool@0
+            displayName: Use Node $(nodeVersion)
+            inputs:
+              versionSpec: $(nodeVersion)
+
+          - script: npm ci
+            displayName: Install dependencies
+            workingDirectory: tests/e2e
+
+          - script: npx playwright install --with-deps chromium
+            displayName: Install Playwright browsers
+            workingDirectory: tests/e2e
+
+          - script: npx playwright test
+            displayName: Run E2E tests
+            workingDirectory: tests/e2e
+            env:
+              BASE_URL: $(baseUrl)
+              API_BASE_URL: $(apiBaseUrl)
+            continueOnError: false
+
+          - task: PublishTestResults@2
+            displayName: Publish test results
+            condition: always()
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: tests/e2e/test-results/junit.xml
+              failTaskOnFailedTests: true
+
+          - task: PublishPipelineArtifact@1
+            displayName: Upload Playwright traces on failure
+            condition: failed()
+            inputs:
+              targetPath: tests/e2e/test-results
+              artifact: playwright-traces
+              publishLocation: pipeline

@@ -1,0 +1,129 @@
+trigger: none
+
+resources:
+  pipelines:
+    - pipeline: ci-backend
+      source: ci-backend
+      trigger:
+        branches:
+          include:
+            - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  containerRegistry: servicematchacr.azurecr.io
+  imageRepository: servicematch-api
+
+stages:
+  - stage: DeployDev
+    displayName: Deploy to Dev
+    variables:
+      - group: servicematch-dev-secrets
+    jobs:
+      - deployment: DeployApiDev
+        displayName: Deploy API to Dev
+        environment: dev
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureContainerApps@1
+                  displayName: Update Container App (dev)
+                  inputs:
+                    azureSubscription: servicematch-azure-connection
+                    containerAppName: servicematch-dev-api
+                    resourceGroup: servicematch-dev-rg
+                    imageToDeploy: $(containerRegistry)/$(imageRepository):$(resources.pipeline.ci-backend.runID)
+
+                - script: |
+                    HEALTH=$(curl -s -o /dev/null -w "%{http_code}" \
+                      https://servicematch-dev-api.northeurope.azurecontainerapps.io/api/v1/health)
+                    if [ "$HEALTH" != "200" ]; then
+                      echo "Health check failed: HTTP $HEALTH"
+                      exit 1
+                    fi
+                    echo "Health check passed"
+                  displayName: Smoke test (dev)
+                  retryCountOnTaskFailure: 3
+
+  - stage: DeployTest
+    displayName: Deploy to Test
+    dependsOn: DeployDev
+    condition: succeeded()
+    variables:
+      - group: servicematch-test-secrets
+    jobs:
+      - deployment: DeployApiTest
+        displayName: Deploy API to Test
+        environment: test
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureContainerApps@1
+                  displayName: Update Container App (test)
+                  inputs:
+                    azureSubscription: servicematch-azure-connection
+                    containerAppName: servicematch-test-api
+                    resourceGroup: servicematch-test-rg
+                    imageToDeploy: $(containerRegistry)/$(imageRepository):$(resources.pipeline.ci-backend.runID)
+
+                - script: |
+                    HEALTH=$(curl -s -o /dev/null -w "%{http_code}" \
+                      https://servicematch-test-api.northeurope.azurecontainerapps.io/api/v1/health)
+                    if [ "$HEALTH" != "200" ]; then
+                      echo "Health check failed: HTTP $HEALTH"
+                      exit 1
+                    fi
+                  displayName: Smoke test (test)
+
+      - job: TriggerE2E
+        displayName: Trigger E2E tests
+        dependsOn: DeployApiTest
+        steps:
+          - task: TriggerBuild@4
+            inputs:
+              definitionIsInCurrentTeamProject: true
+              buildDefinition: e2e-tests
+              waitForQueuedBuildsToFinish: true
+              waitForQueuedBuildsToFinishRefreshTime: 30
+              failTaskIfBuildsNotSuccessful: true
+              buildParameters: ENVIRONMENT:test
+
+  - stage: DeployProd
+    displayName: Deploy to Prod
+    dependsOn: DeployTest
+    condition: succeeded()
+    variables:
+      - group: servicematch-prod-secrets
+    jobs:
+      - deployment: DeployApiProd
+        displayName: Deploy API to Prod
+        environment: prod
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureContainerApps@1
+                  displayName: Update Container App (prod)
+                  inputs:
+                    azureSubscription: servicematch-azure-connection
+                    containerAppName: servicematch-prod-api
+                    resourceGroup: servicematch-prod-rg
+                    imageToDeploy: $(containerRegistry)/$(imageRepository):$(resources.pipeline.ci-backend.runID)
+
+                - script: |
+                    # 30-minute bake time
+                    echo "Baking for 30 minutes..."
+                    sleep 1800
+                    HEALTH=$(curl -s -o /dev/null -w "%{http_code}" \
+                      https://servicematch-prod-api.northeurope.azurecontainerapps.io/api/v1/health)
+                    if [ "$HEALTH" != "200" ]; then
+                      echo "Post-bake health check failed — triggering rollback"
+                      exit 1
+                    fi
+                    echo "Production deployment healthy"
+                  displayName: Bake & health check (prod)
+                  timeoutInMinutes: 40

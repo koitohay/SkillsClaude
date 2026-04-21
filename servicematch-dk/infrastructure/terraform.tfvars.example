@@ -1,0 +1,30 @@
+# Copy to terraform.tfvars or pass via -var flags / pipeline variable groups.
+# Never commit real secrets.
+
+environment = "dev"
+location    = "northeurope"
+project     = "servicematch"
+
+postgresql_sku        = "B_Standard_B1ms"
+postgresql_storage_mb = 32768
+
+# REQUIRED SECRETS — provide via pipeline or local .auto.tfvars (gitignored)
+postgresql_admin_password = "ChangeMeStrong1!"
+jwt_secret                = "change-me-at-least-32-chars-long!!"
+
+container_app_cpu          = 0.25
+container_app_memory       = "0.5Gi"
+container_app_min_replicas = 0
+container_app_max_replicas = 2
+
+acr_name           = "servicematchacr"
+acr_resource_group = "servicematch-shared-rg"
+
+api_image_tag      = "latest"
+frontend_image_tag = "latest"
+
+acs_sender_address = "no-reply@servicematch.dk"
+
+allowed_origins = [
+  "https://servicematch-dev-frontend.northeurope.azurecontainerapps.io"
+]

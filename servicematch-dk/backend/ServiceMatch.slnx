@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ServiceMatch.API/ServiceMatch.API.csproj" />
+    <Project Path="src/ServiceMatch.Application/ServiceMatch.Application.csproj" />
+    <Project Path="src/ServiceMatch.Domain/ServiceMatch.Domain.csproj" />
+    <Project Path="src/ServiceMatch.Infrastructure/ServiceMatch.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ServiceMatch.Application.Tests/ServiceMatch.Application.Tests.csproj" />
+    <Project Path="tests/ServiceMatch.Domain.Tests/ServiceMatch.Domain.Tests.csproj" />
+    <Project Path="tests/ServiceMatch.Integration.Tests/ServiceMatch.Integration.Tests.csproj" />
+  </Folder>
+</Solution>

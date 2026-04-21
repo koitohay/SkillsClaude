@@ -1,0 +1,92 @@
+trigger: none
+
+resources:
+  pipelines:
+    - pipeline: ci-frontend
+      source: ci-frontend
+      trigger:
+        branches:
+          include:
+            - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  containerRegistry: servicematchacr.azurecr.io
+  imageRepository: servicematch-frontend
+
+stages:
+  - stage: DeployDev
+    displayName: Deploy Frontend to Dev
+    jobs:
+      - deployment: DeployFrontendDev
+        displayName: Deploy Frontend to Dev
+        environment: dev
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureContainerApps@1
+                  displayName: Update Frontend Container App (dev)
+                  inputs:
+                    azureSubscription: servicematch-azure-connection
+                    containerAppName: servicematch-dev-frontend
+                    resourceGroup: servicematch-dev-rg
+                    imageToDeploy: $(containerRegistry)/$(imageRepository):$(resources.pipeline.ci-frontend.runID)
+                    environmentVariables: >
+                      NUXT_PUBLIC_API_BASE_URL=https://servicematch-dev-api.northeurope.azurecontainerapps.io/api/v1
+
+                - script: |
+                    HTTP=$(curl -s -o /dev/null -w "%{http_code}" \
+                      https://servicematch-dev-frontend.northeurope.azurecontainerapps.io)
+                    if [ "$HTTP" != "200" ]; then
+                      echo "Frontend health check failed: HTTP $HTTP"
+                      exit 1
+                    fi
+                  displayName: Smoke test (dev)
+
+  - stage: DeployTest
+    displayName: Deploy Frontend to Test
+    dependsOn: DeployDev
+    condition: succeeded()
+    jobs:
+      - deployment: DeployFrontendTest
+        displayName: Deploy Frontend to Test
+        environment: test
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureContainerApps@1
+                  displayName: Update Frontend Container App (test)
+                  inputs:
+                    azureSubscription: servicematch-azure-connection
+                    containerAppName: servicematch-test-frontend
+                    resourceGroup: servicematch-test-rg
+                    imageToDeploy: $(containerRegistry)/$(imageRepository):$(resources.pipeline.ci-frontend.runID)
+                    environmentVariables: >
+                      NUXT_PUBLIC_API_BASE_URL=https://servicematch-test-api.northeurope.azurecontainerapps.io/api/v1
+
+  - stage: DeployProd
+    displayName: Deploy Frontend to Prod
+    dependsOn: DeployTest
+    condition: succeeded()
+    jobs:
+      - deployment: DeployFrontendProd
+        displayName: Deploy Frontend to Prod
+        environment: prod
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureContainerApps@1
+                  displayName: Update Frontend Container App (prod)
+                  inputs:
+                    azureSubscription: servicematch-azure-connection
+                    containerAppName: servicematch-prod-frontend
+                    resourceGroup: servicematch-prod-rg
+                    imageToDeploy: $(containerRegistry)/$(imageRepository):$(resources.pipeline.ci-frontend.runID)
+                    environmentVariables: >
+                      NUXT_PUBLIC_API_BASE_URL=https://servicematch-prod-api.northeurope.azurecontainerapps.io/api/v1
+                      NODE_ENV=production
