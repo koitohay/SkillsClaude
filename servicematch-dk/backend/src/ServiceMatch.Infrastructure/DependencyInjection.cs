@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ServiceMatch.Application.Common.Interfaces;
 using ServiceMatch.Application.Features.ServiceCategories.Queries.GetCategories;
 using ServiceMatch.Domain.Interfaces;
+using ServiceMatch.Infrastructure.Options;
 using ServiceMatch.Infrastructure.Persistence;
 using ServiceMatch.Infrastructure.Persistence.Repositories;
 using ServiceMatch.Infrastructure.Services;
@@ -32,6 +33,9 @@ public static class DependencyInjection
         if (emailProvider == "logging")
             services.AddScoped<IEmailService, LoggingEmailService>();
         // Azure Communication Services implementation registered when provider = "acs"
+
+        services.Configure<AnthropicOptions>(opts => config.GetSection("Anthropic").Bind(opts));
+        services.AddHttpClient<IAiChatService, AnthropicChatService>();
 
         return services;
     }

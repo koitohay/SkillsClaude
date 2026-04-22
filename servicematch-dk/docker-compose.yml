@@ -36,6 +36,7 @@ services:
       Jwt__Issuer: "servicematch-api"
       Jwt__Audience: "servicematch-clients"
       Email__Provider: "logging"
+      Anthropic__ApiKey: "${ANTHROPIC_API_KEY:-}"
     ports:
       - "5000:8080"
     depends_on:

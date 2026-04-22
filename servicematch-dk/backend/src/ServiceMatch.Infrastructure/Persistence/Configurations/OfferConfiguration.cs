@@ -24,6 +24,8 @@ public class OfferConfiguration : IEntityTypeConfiguration<Offer>
             .HasForeignKey(n => n.OfferId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Navigation(o => o.Negotiations).UsePropertyAccessMode(PropertyAccessMode.Field);
+
         builder.HasOne<ServiceProvider>()
             .WithMany()
             .HasForeignKey(o => o.ServiceProviderId)

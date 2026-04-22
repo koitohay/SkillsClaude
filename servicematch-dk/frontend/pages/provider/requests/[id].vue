@@ -1,16 +1,18 @@
 <template>
   <div class="max-w-2xl mx-auto">
-    <button @click="$router.back()" class="btn-ghost mb-6 -ml-3">
+    <button @click="$router.back()" class="btn-ghost mb-6 -ml-2">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
       Tilbage
     </button>
 
-    <div v-if="pending" class="card flex items-center justify-center py-12">
-      <div class="w-6 h-6 border-2 border-violet-600 border-t-transparent rounded-full animate-spin"></div>
+    <!-- Loading -->
+    <div v-if="pending" class="card flex items-center justify-center py-16">
+      <div class="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style="border-color: var(--violet-lt); border-top-color: transparent;"></div>
     </div>
 
     <template v-else-if="request">
-      <!-- Header -->
+
+      <!-- Page header -->
       <div class="flex items-center justify-between mb-6">
         <div>
           <h2 class="page-header">Forespørgsel</h2>
@@ -19,80 +21,91 @@
         <span :class="statusBadge(request.status)">{{ statusLabel(request.status) }}</span>
       </div>
 
-      <!-- Request details -->
-      <div class="card mb-4">
+      <!-- Request details card -->
+      <div class="card mb-5">
         <p class="section-label">Detaljer</p>
-        <div class="space-y-2.5">
+        <div class="space-y-3">
           <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-500">Kategori</span>
-            <span class="font-medium text-gray-900 text-sm">{{ request.categoryName ?? 'Fri tekst' }}</span>
+            <span class="text-sm" style="color: var(--text-2);">Kategori</span>
+            <span class="font-semibold text-sm" style="color: var(--text-1);">{{ request.categoryName ?? 'Fri tekst' }}</span>
           </div>
-          <div v-if="request.freeTextDescription" class="flex justify-between items-start">
-            <span class="text-sm text-gray-500">Beskrivelse</span>
-            <span class="font-medium text-gray-900 text-sm max-w-xs text-right leading-snug">{{ request.freeTextDescription }}</span>
+          <div v-if="request.freeTextDescription" class="flex justify-between items-start gap-4">
+            <span class="text-sm flex-shrink-0" style="color: var(--text-2);">Beskrivelse</span>
+            <span class="font-medium text-sm text-right leading-snug" style="color: var(--text-1); max-width: 280px;">{{ request.freeTextDescription }}</span>
           </div>
-          <div class="divider"></div>
-          <div class="grid grid-cols-3 gap-4 text-center">
-            <div class="bg-gray-50 rounded-xl p-3">
-              <p class="text-xs text-gray-400 mb-1">Dato</p>
-              <p class="font-semibold text-sm text-gray-900">{{ request.requestedDate }}</p>
+          <div style="border-top: 1.5px solid var(--border); margin: 0.75rem 0;"></div>
+          <div class="grid grid-cols-3 gap-3 text-center">
+            <div class="rounded-xl p-3" style="background: var(--bg); border: 1.5px solid var(--border);">
+              <p class="text-xs mb-1" style="color: var(--text-3);">Dato</p>
+              <p class="font-semibold text-sm" style="color: var(--text-1);">{{ request.requestedDate }}</p>
             </div>
-            <div class="bg-gray-50 rounded-xl p-3">
-              <p class="text-xs text-gray-400 mb-1">Tidspunkt</p>
-              <p class="font-semibold text-sm text-gray-900">{{ request.requestedTime.slice(0, 5) }}</p>
+            <div class="rounded-xl p-3" style="background: var(--bg); border: 1.5px solid var(--border);">
+              <p class="text-xs mb-1" style="color: var(--text-3);">Tidspunkt</p>
+              <p class="font-semibold text-sm" style="color: var(--text-1);">{{ request.requestedTime.slice(0, 5) }}</p>
             </div>
-            <div class="bg-gray-50 rounded-xl p-3">
-              <p class="text-xs text-gray-400 mb-1">By</p>
-              <p class="font-semibold text-sm text-gray-900">{{ request.city }}</p>
+            <div class="rounded-xl p-3" style="background: var(--bg); border: 1.5px solid var(--border);">
+              <p class="text-xs mb-1" style="color: var(--text-3);">By</p>
+              <p class="font-semibold text-sm" style="color: var(--text-1);">{{ request.city }}</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Existing offer from this provider -->
-      <div v-if="myOffer" class="card mb-4">
-        <div class="flex items-center justify-between mb-4">
+      <!-- ── Existing offer from this provider ── -->
+      <div v-if="myOffer" class="card mb-5">
+        <div class="flex items-center justify-between mb-5">
           <p class="section-label mb-0">Dit tilbud</p>
           <span :class="offerStatusBadge(myOffer.status)">{{ offerStatusLabel(myOffer.status) }}</span>
         </div>
 
-        <div class="bg-violet-50 rounded-xl px-5 py-4 mb-4 flex items-baseline gap-2">
-          <span class="text-3xl font-bold text-violet-700">{{ myOffer.price.toFixed(0) }}</span>
-          <span class="text-sm text-violet-500 font-medium">DKK</span>
+        <!-- Price display -->
+        <div class="rounded-2xl px-6 py-5 mb-4 flex items-baseline gap-2"
+             style="background: linear-gradient(135deg, rgb(237 233 254 / 0.6) 0%, rgb(221 214 254 / 0.3) 100%); border: 1.5px solid #c4b5fd;">
+          <span class="text-4xl font-bold leading-none" style="color: var(--violet-lt); letter-spacing: -0.04em;">{{ myOffer.price.toFixed(0) }}</span>
+          <span class="text-base font-medium" style="color: var(--violet-lt); opacity: 0.7;">DKK</span>
         </div>
 
-        <p v-if="myOffer.message" class="text-sm text-gray-600 mb-4 leading-snug">{{ myOffer.message }}</p>
+        <p v-if="myOffer.message" class="text-sm leading-relaxed mb-4" style="color: var(--text-2);">{{ myOffer.message }}</p>
 
         <!-- Negotiation thread -->
-        <div v-if="myOffer.negotiations?.length">
-          <p class="section-label">Forhandlingshistorik</p>
+        <div v-if="myOffer.negotiations?.length" class="mb-4">
+          <p class="section-label mb-3">Forhandlingshistorik</p>
           <div class="space-y-2">
             <div v-for="n in myOffer.negotiations" :key="n.id"
-                 :class="['rounded-xl px-4 py-3 border', n.initiatedBy === 'Provider' ? 'bg-violet-50 border-violet-100 mr-8' : 'bg-gray-50 border-gray-100 ml-8']">
+                 class="rounded-xl px-4 py-3"
+                 :style="n.initiatedBy === 'Provider'
+                   ? 'background: rgb(237 233 254 / 0.5); border: 1.5px solid #c4b5fd; margin-right: 2rem;'
+                   : 'background: var(--bg); border: 1.5px solid var(--border); margin-left: 2rem;'">
               <div class="flex items-center justify-between mb-1">
-                <span class="text-xs font-semibold" :class="n.initiatedBy === 'Provider' ? 'text-violet-700' : 'text-gray-500'">
+                <span class="text-xs font-semibold"
+                      :style="n.initiatedBy === 'Provider' ? 'color: var(--violet-lt);' : 'color: var(--text-2);'">
                   {{ n.initiatedBy === 'Provider' ? 'Dig' : 'Klient' }}
                 </span>
                 <div class="flex items-center gap-2">
-                  <span class="text-sm font-bold text-gray-900">{{ n.proposedPrice.toFixed(0) }} DKK</span>
+                  <span class="text-sm font-bold" style="color: var(--text-1);">{{ n.proposedPrice.toFixed(0) }} DKK</span>
                   <span :class="negStatusBadge(n.status)">{{ negStatusLabel(n.status) }}</span>
                 </div>
               </div>
-              <p v-if="n.message" class="text-xs text-gray-500 leading-snug">{{ n.message }}</p>
+              <p v-if="n.message" class="text-xs leading-relaxed" style="color: var(--text-2);">"{{ n.message }}"</p>
             </div>
           </div>
         </div>
 
-        <!-- Respond to pending client counter -->
-        <div v-if="pendingClientNegotiation" class="border-t border-gray-100 pt-4 mt-4">
-          <div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4">
-            <p class="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-1">Klientens forslag</p>
-            <div class="flex items-baseline gap-1.5">
-              <span class="text-2xl font-bold text-amber-900">{{ pendingClientNegotiation.proposedPrice.toFixed(0) }}</span>
-              <span class="text-sm text-amber-600">DKK</span>
-            </div>
-            <p v-if="pendingClientNegotiation.message" class="text-sm text-amber-700 mt-1 italic">"{{ pendingClientNegotiation.message }}"</p>
+        <!-- Pending client counter — action required -->
+        <div v-if="pendingClientNegotiation"
+             class="rounded-2xl p-5"
+             style="background: rgb(254 243 199 / 0.5); border: 1.5px solid #fcd34d;">
+
+          <p class="text-xs font-bold uppercase tracking-wider mb-3" style="color: #92400e;">Klientens forslag</p>
+          <div class="flex items-baseline gap-2 mb-2">
+            <span class="text-3xl font-bold leading-none" style="color: #78350f; letter-spacing: -0.04em;">
+              {{ pendingClientNegotiation.proposedPrice.toFixed(0) }}
+            </span>
+            <span class="text-sm font-medium" style="color: #92400e;">DKK</span>
           </div>
+          <p v-if="pendingClientNegotiation.message" class="text-sm italic mb-4" style="color: #92400e;">
+            "{{ pendingClientNegotiation.message }}"
+          </p>
 
           <div v-if="negError" class="alert-error mb-3">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0"/></svg>
@@ -110,10 +123,11 @@
             </button>
           </div>
 
-          <div v-if="showProviderCounter" class="space-y-3 border-t border-gray-100 pt-3 mt-3">
+          <!-- Provider counter form -->
+          <div v-if="showProviderCounter" class="space-y-3 pt-3" style="border-top: 1.5px solid #fcd34d;">
             <div class="relative">
               <input v-model.number="counterForm.price" type="number" min="1" class="input-field pr-14" placeholder="Dit modtilbud" />
-              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-medium">DKK</span>
+              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium" style="color: var(--text-3);">DKK</span>
             </div>
             <textarea v-model="counterForm.message" rows="2" class="input-field" placeholder="Besked (valgfri)" />
             <div class="flex gap-2">
@@ -121,17 +135,19 @@
               <button @click="showProviderCounter = false" class="btn-secondary px-4">Annuller</button>
             </div>
           </div>
-          <button v-else @click="showProviderCounter = true" class="btn-ghost w-full justify-center mt-1 text-xs">
+          <button v-else @click="showProviderCounter = true" class="btn-ghost text-xs w-full justify-center mt-1">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
             Foreslå anden pris
           </button>
         </div>
       </div>
 
-      <!-- Submit new offer -->
+      <!-- ── Submit new offer ── -->
       <div v-else-if="request.status === 'Open' || request.status === 'OfferReceived'" class="card">
         <p class="section-label">Afgiv tilbud</p>
-        <p class="text-sm text-gray-500 mb-5 leading-snug">Indgiv din pris for at besvare denne forespørgsel. Klienten kan acceptere, afvise eller forhandle.</p>
+        <p class="text-sm leading-relaxed mb-6" style="color: var(--text-2);">
+          Indgiv din pris for at besvare denne forespørgsel. Klienten kan acceptere, afvise eller forhandle.
+        </p>
 
         <div v-if="submitError" class="alert-error mb-4">
           <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0"/></svg>
@@ -140,14 +156,19 @@
 
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">Din pris</label>
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">Din pris</label>
             <div class="relative">
-              <input v-model.number="offerForm.price" type="number" min="1" class="input-field pr-14 text-lg font-semibold" placeholder="0" />
-              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-medium">DKK</span>
+              <input v-model.number="offerForm.price" type="number" min="1"
+                     class="input-field pr-14 text-xl font-bold" placeholder="0"
+                     style="letter-spacing: -0.02em;" />
+              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium" style="color: var(--text-3);">DKK</span>
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">Besked til klienten <span class="text-gray-400 font-normal">(valgfri)</span></label>
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">
+              Besked til klienten
+              <span class="font-normal" style="color: var(--text-3);">(valgfri)</span>
+            </label>
             <textarea v-model="offerForm.message" rows="3" class="input-field" placeholder="Beskriv hvad din pris inkluderer…" />
           </div>
         </div>
@@ -159,18 +180,20 @@
         </button>
       </div>
 
-      <!-- Already accepted or closed -->
-      <div v-else-if="request.status === 'Accepted'" class="card text-center py-8">
-        <div class="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center mx-auto mb-3">
-          <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0"/></svg>
+      <!-- Booking confirmed -->
+      <div v-else-if="request.status === 'Accepted'" class="card text-center py-10">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+             style="background: #d1fae5;">
+          <svg class="w-7 h-7" style="color: #059669;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0"/></svg>
         </div>
-        <p class="font-semibold text-gray-800">Booking bekræftet</p>
-        <p class="text-sm text-gray-500 mt-1">Denne forespørgsel er accepteret og er nu en booking.</p>
+        <p class="font-semibold mb-1" style="color: var(--text-1);">Booking bekræftet</p>
+        <p class="text-sm" style="color: var(--text-2);">Denne forespørgsel er accepteret og er nu en booking.</p>
+        <NuxtLink to="/provider/bookings" class="btn-primary mt-5">Se mine bookinger</NuxtLink>
       </div>
     </template>
 
     <div v-else class="card text-center py-12">
-      <p class="font-semibold text-gray-700">Forespørgsel ikke fundet.</p>
+      <p class="font-semibold" style="color: var(--text-1);">Forespørgsel ikke fundet.</p>
       <button @click="$router.back()" class="btn-secondary mt-4">Gå tilbage</button>
     </div>
   </div>

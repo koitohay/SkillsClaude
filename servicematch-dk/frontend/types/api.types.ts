@@ -93,3 +93,6 @@ export interface OfferDto {
   createdAt: string
   negotiations: NegotiationDto[]
 }
+
+export interface ChatMessageDto { role: 'user' | 'assistant'; content: string }
+export interface ChatReplyDto { reply: string }

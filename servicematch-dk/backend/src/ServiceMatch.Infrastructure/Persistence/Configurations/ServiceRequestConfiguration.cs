@@ -23,6 +23,8 @@ public class ServiceRequestConfiguration : IEntityTypeConfiguration<ServiceReque
             .HasForeignKey(o => o.ServiceRequestId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Navigation(r => r.Offers).UsePropertyAccessMode(PropertyAccessMode.Field);
+
         builder.HasOne<Client>()
             .WithMany()
             .HasForeignKey(r => r.ClientId)

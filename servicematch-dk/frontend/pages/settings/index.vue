@@ -2,19 +2,20 @@
   <div class="max-w-2xl mx-auto">
     <div class="mb-8">
       <h2 class="page-header">Indstillinger</h2>
-      <p class="page-sub">Opdater dine profiloplysninger</p>
+      <p class="page-sub">Opdater dine profiloplysninger og ydelser</p>
     </div>
 
-    <div v-if="pending" class="card animate-pulse space-y-4">
-      <div class="h-5 bg-gray-200 rounded w-1/3"></div>
-      <div class="h-10 bg-gray-100 rounded-xl"></div>
-      <div class="h-10 bg-gray-100 rounded-xl"></div>
-      <div class="h-10 bg-gray-100 rounded-xl"></div>
+    <!-- Skeleton -->
+    <div v-if="pending" class="card space-y-4" style="padding: 1.5rem;">
+      <div class="h-4 rounded skeleton w-1/4 mb-2"></div>
+      <div class="h-10 rounded-xl skeleton"></div>
+      <div class="h-10 rounded-xl skeleton"></div>
+      <div class="h-10 rounded-xl skeleton"></div>
     </div>
 
     <template v-else>
       <!-- ── Client profile ── -->
-      <div v-if="auth.isClient" class="card mb-6">
+      <div v-if="auth.isClient" class="card mb-5" style="padding: 1.75rem;">
         <p class="section-label">Profiloplysninger</p>
 
         <div v-if="profileSaved" class="alert-success mb-4">
@@ -28,15 +29,15 @@
 
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">Fuldt navn</label>
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">Fuldt navn</label>
             <input v-model="clientForm.fullName" class="input-field" placeholder="Jane Doe" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">E-mail</label>
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">E-mail</label>
             <input v-model="clientForm.email" type="email" class="input-field" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">Telefonnummer</label>
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">Telefonnummer</label>
             <input v-model="clientForm.phoneNumber" class="input-field" placeholder="+45 20 12 34 56" />
           </div>
         </div>
@@ -47,7 +48,7 @@
       </div>
 
       <!-- ── Provider profile ── -->
-      <div v-else-if="auth.isProvider" class="card mb-6">
+      <div v-else-if="auth.isProvider" class="card mb-5" style="padding: 1.75rem;">
         <p class="section-label">Virksomhedsoplysninger</p>
 
         <div v-if="profileSaved" class="alert-success mb-4">
@@ -62,28 +63,28 @@
         <div class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5">Firmanavn</label>
+              <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">Firmanavn</label>
               <input v-model="providerForm.companyName" class="input-field" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5">Kontaktperson</label>
+              <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">Kontaktperson</label>
               <input v-model="providerForm.contactName" class="input-field" />
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">E-mail</label>
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">E-mail</label>
             <input v-model="providerForm.email" type="email" class="input-field" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">Telefonnummer</label>
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">Telefonnummer</label>
             <input v-model="providerForm.phoneNumber" class="input-field" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">Adresse</label>
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">Adresse</label>
             <input v-model="providerForm.address" class="input-field" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">By</label>
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">By</label>
             <select v-model="providerForm.city" class="input-field">
               <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
             </select>
@@ -96,7 +97,7 @@
       </div>
 
       <!-- ── Provider services ── -->
-      <div v-if="auth.isProvider" class="card">
+      <div v-if="auth.isProvider" class="card" style="padding: 1.75rem;">
         <p class="section-label">Mine ydelser</p>
 
         <div v-if="serviceError" class="alert-error mb-4">
@@ -107,7 +108,10 @@
         <!-- Service list -->
         <div v-if="services.length" class="space-y-2 mb-5">
           <div v-for="svc in services" :key="svc.id"
-               class="rounded-xl border border-gray-100 bg-gray-50 overflow-hidden">
+               class="rounded-xl overflow-hidden transition-all duration-150"
+               :style="editingService?.id === svc.id
+                 ? 'border: 1.5px solid #c4b5fd; background: rgb(237 233 254 / 0.25);'
+                 : 'border: 1.5px solid var(--border); background: var(--bg);'">
             <!-- Edit mode -->
             <template v-if="editingService?.id === svc.id">
               <div class="p-4 space-y-3">
@@ -115,10 +119,10 @@
                 <textarea v-model="editingService.description" rows="2" class="input-field text-sm" placeholder="Beskrivelse" />
                 <div class="relative">
                   <input v-model.number="editingService.basePrice" type="number" min="1" class="input-field text-sm pr-14" placeholder="Pris" />
-                  <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">DKK</span>
+                  <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm" style="color: var(--text-3);">DKK</span>
                 </div>
                 <div class="flex gap-2">
-                  <button @click="saveEditService" class="btn-primary text-xs px-4 py-2">Gem</button>
+                  <button @click="saveEditService" class="btn-primary text-xs px-4 py-2">Gem ændringer</button>
                   <button @click="editingService = null" class="btn-secondary text-xs px-4 py-2">Annuller</button>
                 </div>
               </div>
@@ -127,31 +131,39 @@
             <template v-else>
               <div class="flex items-center gap-3 px-4 py-3">
                 <div class="flex-1 min-w-0">
-                  <p class="font-semibold text-sm text-gray-900">{{ svc.name }}</p>
-                  <p class="text-xs text-gray-500 mt-0.5 line-clamp-1">{{ svc.description }}</p>
+                  <p class="font-semibold text-sm" style="color: var(--text-1);">{{ svc.name }}</p>
+                  <p class="text-xs mt-0.5 line-clamp-1" style="color: var(--text-2);">{{ svc.description }}</p>
                 </div>
-                <p class="font-bold text-sm text-gray-900 flex-shrink-0 mr-2">{{ svc.basePrice.toFixed(0) }} DKK</p>
-                <button @click="startEdit(svc)" class="btn-ghost text-xs px-2 py-1">Rediger</button>
+                <p class="font-bold text-sm flex-shrink-0 mr-1" style="color: var(--violet-lt);">
+                  {{ svc.basePrice.toFixed(0) }} <span class="font-normal text-xs" style="color: var(--text-3);">DKK</span>
+                </p>
+                <button @click="startEdit(svc)" class="btn-ghost text-xs px-2 py-1.5">Rediger</button>
                 <button @click="deleteService(svc.id)"
-                        class="text-xs px-2 py-1 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                        class="text-xs px-2 py-1.5 rounded-lg font-medium transition-all duration-150"
+                        style="color: #dc2626;"
+                        onmouseenter="this.style.background='#fee2e2'" onmouseleave="this.style.background=''">
                   Slet
                 </button>
               </div>
             </template>
           </div>
         </div>
-        <p v-else class="text-sm text-gray-400 italic mb-5">Ingen ydelser tilføjet endnu.</p>
+
+        <div v-else class="flex items-center gap-2.5 text-sm italic mb-5 py-2" style="color: var(--text-3);">
+          <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          Ingen ydelser tilføjet endnu.
+        </div>
 
         <!-- Add service form -->
-        <div class="border-t border-gray-100 pt-5">
-          <p class="text-sm font-semibold text-gray-700 mb-3">Tilføj ny ydelse</p>
+        <div style="border-top: 1.5px solid var(--border); padding-top: 1.25rem;">
+          <p class="text-sm font-semibold mb-3" style="color: var(--text-1);">Tilføj ny ydelse</p>
           <div class="space-y-3">
             <input v-model="newService.name" class="input-field" placeholder="Navn på ydelse" />
             <textarea v-model="newService.description" rows="2" class="input-field" placeholder="Beskrivelse af ydelsen" />
             <div class="grid grid-cols-2 gap-3">
               <div class="relative">
                 <input v-model.number="newService.basePrice" type="number" min="1" class="input-field pr-14" placeholder="Pris" />
-                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">DKK</span>
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm" style="color: var(--text-3);">DKK</span>
               </div>
               <select v-model="newService.categoryId" class="input-field">
                 <option :value="null">Ingen kategori</option>

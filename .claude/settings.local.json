@@ -5,7 +5,8 @@
       "Bash(dotnet sln *)",
       "Bash(dotnet add *)",
       "Bash(npx nuxi@latest init frontend --package-manager npm --no-install)",
-      "Bash(dotnet build *)"
+      "Bash(dotnet build *)",
+      "Read(//Users/kula/.claude/**)"
     ]
   }
 }

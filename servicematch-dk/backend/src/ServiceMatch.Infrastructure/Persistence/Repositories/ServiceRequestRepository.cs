@@ -45,7 +45,17 @@ public sealed class ServiceRequestRepository(AppDbContext context) : IServiceReq
 
     public Task UpdateAsync(ServiceRequest request, CancellationToken ct)
     {
-        context.ServiceRequests.Update(request);
+        foreach (var offer in request.Offers)
+        {
+            if (context.Entry(offer).State == Microsoft.EntityFrameworkCore.EntityState.Detached)
+                context.Offers.Add(offer);
+
+            foreach (var negotiation in offer.Negotiations)
+            {
+                if (context.Entry(negotiation).State == Microsoft.EntityFrameworkCore.EntityState.Detached)
+                    context.Negotiations.Add(negotiation);
+            }
+        }
         return Task.CompletedTask;
     }
 }

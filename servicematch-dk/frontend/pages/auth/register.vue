@@ -1,30 +1,36 @@
 <template>
-  <div class="min-h-[70vh] flex items-center justify-center py-12">
-    <div class="w-full max-w-sm">
-      <div class="text-center mb-8">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-500 flex items-center justify-center mx-auto mb-4 shadow-lg">
+  <div class="min-h-[80vh] flex items-center justify-center py-12">
+    <div class="w-full max-w-md">
+
+      <!-- Brand -->
+      <div class="text-center mb-10">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 mx-auto"
+             style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); box-shadow: var(--shadow-v);">
           <span class="text-white text-xl font-bold">S</span>
         </div>
-        <h1 class="text-2xl font-bold text-gray-900">Opret kundekonto</h1>
-        <p class="text-sm text-gray-500 mt-1">Find og book services i hele Danmark</p>
+        <h1 class="text-3xl font-bold mb-1" style="color: var(--text-1); letter-spacing: -0.03em;">
+          Opret kundekonto
+        </h1>
+        <p class="text-sm" style="color: var(--text-2);">Find og book services i hele Danmark</p>
       </div>
 
-      <div class="card">
-        <form @submit.prevent="submit" class="space-y-4">
+      <!-- Card -->
+      <div class="card" style="padding: 2rem;">
+        <form @submit.prevent="submit" class="space-y-5">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">Fulde navn</label>
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">Fulde navn</label>
             <input v-model="form.fullName" type="text" required class="input-field" placeholder="Jane Doe" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">E-mail</label>
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">E-mail</label>
             <input v-model="form.email" type="email" required class="input-field" placeholder="jane@example.dk" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">Telefon</label>
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">Telefon</label>
             <input v-model="form.phoneNumber" type="tel" required class="input-field" placeholder="+45 20 12 34 56" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">Adgangskode</label>
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-1);">Adgangskode</label>
             <input v-model="form.password" type="password" required minlength="8" class="input-field" placeholder="Min. 8 tegn" />
           </div>
 
@@ -33,20 +39,31 @@
             {{ error }}
           </div>
 
-          <button type="submit" :disabled="loading" class="btn-primary w-full py-3 mt-2">
-            <svg v-if="loading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+          <button type="submit" :disabled="loading" class="btn-primary w-full py-3 mt-1">
+            <svg v-if="loading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
             {{ loading ? 'Opretter…' : 'Opret konto' }}
           </button>
         </form>
 
         <div class="divider"></div>
 
-        <div class="text-center space-y-2">
-          <p class="text-sm text-gray-500">Har du allerede en konto?
-            <NuxtLink to="/auth/login" class="text-violet-600 font-medium hover:text-violet-700">Log ind</NuxtLink>
+        <div class="text-center space-y-2.5">
+          <p class="text-sm" style="color: var(--text-2);">
+            Har du allerede en konto?
+            <NuxtLink to="/auth/login" class="font-semibold transition-colors duration-150" style="color: var(--violet-lt);"
+                      onmouseenter="this.style.color='var(--violet-dk)'" onmouseleave="this.style.color='var(--violet-lt)'">
+              Log ind
+            </NuxtLink>
           </p>
-          <p class="text-sm text-gray-500">Er du udbyder?
-            <NuxtLink to="/auth/register-provider" class="text-violet-600 font-medium hover:text-violet-700">Tilmeld som udbyder</NuxtLink>
+          <p class="text-sm" style="color: var(--text-2);">
+            Er du udbyder?
+            <NuxtLink to="/auth/register-provider" class="font-semibold transition-colors duration-150" style="color: var(--violet-lt);"
+                      onmouseenter="this.style.color='var(--violet-dk)'" onmouseleave="this.style.color='var(--violet-lt)'">
+              Tilmeld som udbyder
+            </NuxtLink>
           </p>
         </div>
       </div>
