@@ -91,5 +91,7 @@ public static class DatabaseSeeder
 
         await context.ProviderServices.AddRangeAsync(services);
         await context.SaveChangesAsync();
+
+        await DemoDataSeeder.SeedAsync(context, hash);
     }
 }

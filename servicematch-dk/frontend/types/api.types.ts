@@ -96,3 +96,14 @@ export interface OfferDto {
 
 export interface ChatMessageDto { role: 'user' | 'assistant'; content: string }
 export interface ChatReplyDto { reply: string }
+
+export interface FeaturedOfferDto {
+  offerId: string
+  serviceRequestId: string
+  categoryName: string
+  city: string
+  price: number
+  providerMessage: string | null
+  curationReason: string
+  offerCreatedAt: string
+}

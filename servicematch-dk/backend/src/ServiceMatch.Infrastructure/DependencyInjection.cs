@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ServiceMatch.Application.Common.Interfaces;
 using ServiceMatch.Application.Features.ServiceCategories.Queries.GetCategories;
 using ServiceMatch.Domain.Interfaces;
+using ServiceMatch.Infrastructure.BackgroundServices;
 using ServiceMatch.Infrastructure.Options;
 using ServiceMatch.Infrastructure.Persistence;
 using ServiceMatch.Infrastructure.Persistence.Repositories;
@@ -42,6 +43,10 @@ public static class DependencyInjection
 
         services.Configure<AnthropicOptions>(opts => config.GetSection("Anthropic").Bind(opts));
         services.AddHttpClient<IAiChatService, AnthropicChatService>();
+
+        services.AddMemoryCache();
+        services.AddHttpClient("anthropic");
+        services.AddHostedService<OffersFeedAgentService>();
 
         return services;
     }

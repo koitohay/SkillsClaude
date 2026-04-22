@@ -81,6 +81,62 @@
       </div>
     </section>
 
+    <!-- ── Featured Offers ─────────────────────────────────── -->
+    <section v-if="featuredOffers && featuredOffers.length > 0" class="mb-14">
+      <div class="flex items-end justify-between mb-6">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: var(--violet-lt);">Udvalgt af AI</p>
+          <h2 class="text-xl font-bold" style="color: var(--text-1); letter-spacing: -0.025em;">Aktuelle tilbud</h2>
+          <p class="text-sm mt-0.5" style="color: var(--text-2);">De bedste tilbud fra verificerede udbydere lige nu</p>
+        </div>
+        <!-- Pulsing live indicator -->
+        <div class="flex items-center gap-2 text-xs font-medium" style="color: var(--text-3);">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Opdateres løbende
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <button
+          v-for="offer in featuredOffers"
+          :key="offer.offerId"
+          @click="bookOffer(offer)"
+          class="card-hover text-left flex flex-col gap-3 group"
+          style="padding: 1.25rem;"
+        >
+          <!-- Category + city row -->
+          <div class="flex items-center justify-between">
+            <span class="badge-violet text-xs font-semibold">{{ offer.categoryName }}</span>
+            <span class="flex items-center gap-1 text-xs font-medium" style="color: var(--text-3);">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              {{ offer.city }}
+            </span>
+          </div>
+
+          <!-- Price -->
+          <div>
+            <p class="text-2xl font-bold leading-none" style="color: var(--text-1); letter-spacing: -0.04em;">
+              {{ offer.price.toLocaleString('da-DK') }} <span class="text-base font-medium" style="color: var(--text-3);">DKK</span>
+            </p>
+            <p v-if="offer.providerMessage" class="text-sm mt-1.5 line-clamp-2" style="color: var(--text-2);">{{ offer.providerMessage }}</p>
+          </div>
+
+          <!-- AI reason -->
+          <p class="text-xs leading-relaxed" style="color: var(--text-3);">
+            <span class="font-semibold" style="color: var(--violet-lt);">✦ </span>{{ offer.curationReason }}
+          </p>
+
+          <!-- CTA row -->
+          <div class="flex items-center justify-between pt-1 border-t" style="border-color: var(--border);">
+            <span class="text-xs" style="color: var(--text-3);">{{ timeAgo(offer.offerCreatedAt) }}</span>
+            <span class="text-xs font-semibold transition-colors duration-150 group-hover:text-violet-700" style="color: var(--violet-lt);">
+              Book nu →
+            </span>
+          </div>
+        </button>
+      </div>
+    </section>
+
     <!-- ── Categories ───────────────────────────────────────── -->
     <section class="mb-14">
       <div class="flex items-end justify-between mb-6">
@@ -161,13 +217,16 @@
 </template>
 
 <script setup lang="ts">
-import type { CategoryDto } from '~/types/api.types'
+import type { CategoryDto, FeaturedOfferDto } from '~/types/api.types'
 
 const { $api } = useNuxtApp()
 const router = useRouter()
 
 const { data: categories } = await useAsyncData('categories', () =>
   $api<CategoryDto[]>('/categories'))
+
+const { data: featuredOffers } = await useAsyncData('featured-offers', () =>
+  $api<FeaturedOfferDto[]>('/featured-offers'))
 
 const searchTerm = ref('')
 
@@ -185,5 +244,18 @@ function catEmoji(slug: string): string {
 
 function browseCategory(cat: CategoryDto) {
   router.push(`/browse/${cat.id}`)
+}
+
+function bookOffer(offer: FeaturedOfferDto) {
+  router.push(`/offers/${offer.offerId}`)
+}
+
+function timeAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime()
+  const h = Math.floor(diff / 3_600_000)
+  if (h < 1) return 'Lige nu'
+  if (h < 24) return `${h}t siden`
+  const d = Math.floor(h / 24)
+  return `${d}d siden`
 }
 </script>
