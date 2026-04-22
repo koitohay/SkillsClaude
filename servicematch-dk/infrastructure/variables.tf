@@ -43,6 +43,13 @@ variable "jwt_secret" {
   sensitive   = true
 }
 
+variable "anthropic_api_key" {
+  description = "API key for the Anthropic/AI gateway"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
 variable "container_app_cpu" {
   description = "CPU allocation for API container app"
   type        = number

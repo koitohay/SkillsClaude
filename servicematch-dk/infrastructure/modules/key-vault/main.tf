@@ -41,3 +41,9 @@ resource "azurerm_key_vault_secret" "appinsights" {
   value        = var.application_insights_conn_str
   key_vault_id = azurerm_key_vault.this.id
 }
+
+resource "azurerm_key_vault_secret" "anthropic" {
+  name         = "anthropic-api-key"
+  value        = var.anthropic_api_key
+  key_vault_id = azurerm_key_vault.this.id
+}

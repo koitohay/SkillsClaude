@@ -5,3 +5,4 @@ output "secret_name_postgresql"  { value = azurerm_key_vault_secret.postgresql.n
 output "secret_name_jwt"         { value = azurerm_key_vault_secret.jwt.name }
 output "secret_name_acs"         { value = azurerm_key_vault_secret.acs.name }
 output "secret_name_appinsights" { value = azurerm_key_vault_secret.appinsights.name }
+output "secret_name_anthropic"   { value = azurerm_key_vault_secret.anthropic.name }

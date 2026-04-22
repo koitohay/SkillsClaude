@@ -6,3 +6,4 @@ variable "jwt_secret"                    { type = string; sensitive = true }
 variable "postgresql_connection_string"  { type = string; sensitive = true }
 variable "acs_connection_string"         { type = string; sensitive = true }
 variable "application_insights_conn_str" { type = string; sensitive = true }
+variable "anthropic_api_key"            { type = string; sensitive = true }

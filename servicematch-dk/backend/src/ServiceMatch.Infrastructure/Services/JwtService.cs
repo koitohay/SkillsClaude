@@ -22,11 +22,12 @@ public sealed class JwtService(IConfiguration config) : IJwtService
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
+        var expiryDays = int.TryParse(config["Jwt:ExpiryDays"], out var days) ? days : 7;
         var token = new JwtSecurityToken(
             issuer: config["Jwt:Issuer"],
             audience: config["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddDays(7),
+            expires: DateTime.UtcNow.AddDays(expiryDays),
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

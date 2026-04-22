@@ -1,18 +1,20 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using ServiceMatch.Domain.Entities;
 
 namespace ServiceMatch.Infrastructure.Persistence.Seed;
 
 public static class DatabaseSeeder
 {
-    public static async Task SeedAsync(AppDbContext context)
+    public static async Task SeedAsync(AppDbContext context, IConfiguration config)
     {
         await context.Database.MigrateAsync();
 
         if (await context.ServiceProviders.AnyAsync())
             return;
 
-        var hash = BCrypt.Net.BCrypt.HashPassword("Provider123!");
+        var seedPassword = config["Seed:DefaultPassword"] ?? "Provider123!";
+        var hash = BCrypt.Net.BCrypt.HashPassword(seedPassword);
 
         var bella = ServiceProvider.Create("Salon Bella", "Maria Jensen", "maria@salonbella.dk",
             "+4522334455", "Strøget 10", "København", "11223344", hash);

@@ -61,6 +61,7 @@ module "key_vault" {
   postgresql_connection_string   = module.postgresql.connection_string
   acs_connection_string          = module.communication_services.connection_string
   application_insights_conn_str  = module.application_insights.connection_string
+  anthropic_api_key              = var.anthropic_api_key
 }
 
 module "postgresql" {
@@ -114,6 +115,7 @@ module "container_app" {
     Jwt__Secret                          = module.key_vault.secret_name_jwt
     Email__AcsConnectionString           = module.key_vault.secret_name_acs
     ApplicationInsights__ConnectionString = module.key_vault.secret_name_appinsights
+    Anthropic__ApiKey                    = module.key_vault.secret_name_anthropic
   }
 }
 

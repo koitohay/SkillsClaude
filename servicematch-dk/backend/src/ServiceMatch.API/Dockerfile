@@ -21,4 +21,6 @@ RUN dotnet publish "src/ServiceMatch.API/ServiceMatch.API.csproj" -c Release -o 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+USER appuser
 ENTRYPOINT ["dotnet", "ServiceMatch.API.dll"]

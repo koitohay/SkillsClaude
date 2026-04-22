@@ -15,8 +15,8 @@ public sealed class AnthropicChatService(
     IServiceProviderRepository providerRepo,
     IOptions<AnthropicOptions> options) : IAiChatService
 {
-    private const string ApiUrl = "https://api.marketplace.novo-genai.com/v1/chat/completions";
-    private const string Model = "anthropic_claude_haiku_4_5_v1_0";
+    private string ApiUrl => options.Value.ApiUrl;
+    private string Model => options.Value.Model;
     private const string SystemPrompt =
         "You are a helpful assistant for ServiceMatch DK, a Danish online marketplace " +
         "where clients book home services (cleaning, plumbing, gardening, etc.) from local service providers. " +

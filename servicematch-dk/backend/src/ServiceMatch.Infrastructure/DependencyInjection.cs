@@ -30,9 +30,15 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         var emailProvider = config["Email:Provider"] ?? "logging";
-        if (emailProvider == "logging")
+        if (emailProvider == "acs")
+        {
+            services.Configure<AcsOptions>(opts => config.GetSection("Email:Acs").Bind(opts));
+            services.AddScoped<IEmailService, AcsEmailService>();
+        }
+        else
+        {
             services.AddScoped<IEmailService, LoggingEmailService>();
-        // Azure Communication Services implementation registered when provider = "acs"
+        }
 
         services.Configure<AnthropicOptions>(opts => config.GetSection("Anthropic").Bind(opts));
         services.AddHttpClient<IAiChatService, AnthropicChatService>();

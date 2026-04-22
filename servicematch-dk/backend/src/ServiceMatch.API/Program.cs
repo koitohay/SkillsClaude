@@ -36,8 +36,9 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-var jwtSecret = builder.Configuration["Jwt:Secret"]
-    ?? throw new InvalidOperationException("JWT secret is not configured.");
+var jwtSecret = builder.Configuration["Jwt:Secret"];
+if (string.IsNullOrWhiteSpace(jwtSecret))
+    throw new InvalidOperationException("JWT secret is not configured. Set Jwt:Secret (min 32 chars) via environment variable JWT__SECRET or user-secrets.");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
@@ -69,6 +70,7 @@ builder.Services.AddRateLimiter(opts =>
     opts.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
+builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -101,7 +103,9 @@ app.MapHealthChecks("/api/v1/health");
 if (!app.Environment.IsEnvironment("Test"))
 {
     using var scope = app.Services.CreateScope();
-    await DatabaseSeeder.SeedAsync(scope.ServiceProvider.GetRequiredService<AppDbContext>());
+    await DatabaseSeeder.SeedAsync(
+        scope.ServiceProvider.GetRequiredService<AppDbContext>(),
+        scope.ServiceProvider.GetRequiredService<IConfiguration>());
 }
 
 app.Run();
