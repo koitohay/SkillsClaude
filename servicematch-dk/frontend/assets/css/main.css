@@ -214,17 +214,20 @@
 
   /* ── Nav helpers ──────────────────────────────────────────── */
   .nav-link {
-    @apply inline-flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-lg transition-all duration-150;
+    @apply inline-flex items-center gap-1.5 text-sm font-medium px-3.5 py-1.5 rounded-lg transition-all duration-150;
     color: var(--text-2);
+    border: 1px solid transparent;
   }
   .nav-link:hover {
-    background: rgb(124 58 237 / 0.06);
+    background: rgb(124 58 237 / 0.07);
     color: var(--violet-lt);
+    border-color: rgb(124 58 237 / 0.12);
   }
   .nav-link.active {
-    background: rgb(124 58 237 / 0.08);
+    background: rgb(124 58 237 / 0.10);
     color: var(--violet-lt);
     font-weight: 600;
+    border-color: rgb(124 58 237 / 0.18);
   }
 
   .mobile-nav-link {
@@ -238,6 +241,7 @@
   .mobile-nav-link.active {
     background: rgb(124 58 237 / 0.08);
     color: var(--violet-lt);
+    font-weight: 600;
   }
 
   /* ── Service row ──────────────────────────────────────────── */

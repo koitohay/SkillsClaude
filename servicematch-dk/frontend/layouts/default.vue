@@ -62,7 +62,7 @@
           </template>
 
           <template v-else>
-            <NuxtLink to="/auth/login"    class="nav-link">Log ind</NuxtLink>
+            <NuxtLink to="/auth/login" class="btn-secondary">Log ind</NuxtLink>
             <NuxtLink to="/auth/register" class="btn-primary ml-2">Tilmeld dig</NuxtLink>
           </template>
         </div>
